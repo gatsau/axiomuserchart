@@ -387,19 +387,19 @@
     <div class="modal-body">
       <div class="modal-step">
         <div class="step-num">1</div>
-        <div class="step-text">Open <strong style="color:#fff">axiom.trade</strong> in your browser and log in to your account.</div>
+        <div class="step-text">Open a new browser tab and go directly to:<br><code>https://api6.axiom.trade/online-users-count</code><br>You should see a live number (you must be logged in to axiom.trade).</div>
       </div>
       <div class="modal-step">
         <div class="step-num">2</div>
-        <div class="step-text">Open DevTools (<code>F12</code> or <code>Cmd+Option+I</code>), go to the <code>Network</code> tab, refresh the page, and click any request to <code>api6.axiom.trade</code>.</div>
+        <div class="step-text">On that tab, open DevTools (<code>F12</code> or <code>Cmd+Option+I</code>) and go to the <code>Network</code> tab. Hard-refresh with <code>Cmd+Shift+R</code> (Mac) or <code>Ctrl+Shift+R</code> (Win).</div>
       </div>
       <div class="modal-step">
         <div class="step-num">3</div>
-        <div class="step-text">Under <code>Request Headers</code>, find the <code>cookie</code> header. Copy the entire value (it's a long string).</div>
+        <div class="step-text">Click the <code>online-users-count</code> request at the top of the list. Under <strong style="color:#fff">Request Headers</strong>, find <code>cookie</code> and copy the entire value.</div>
       </div>
       <div class="modal-step">
         <div class="step-num">4</div>
-        <div class="step-text">Paste it below and click Save. The cookie is stored locally in <code>.axiom-cookie</code> and never leaves your machine.</div>
+        <div class="step-text">Paste it below and click Save. Stored locally in <code>.axiom-cookie</code> — never leaves your machine.</div>
       </div>
       <div class="modal-divider"></div>
       <div class="cookie-input-label">Cookie Value</div>
