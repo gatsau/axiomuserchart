@@ -38,7 +38,6 @@
       overflow: hidden;
     }
 
-    /* ── noise overlay ── */
     body::before {
       content: '';
       position: fixed; inset: 0; z-index: 1000; pointer-events: none;
@@ -46,48 +45,33 @@
       opacity: 0.025;
     }
 
-    /* ── scanlines ── */
     body::after {
       content: '';
       position: fixed; inset: 0; z-index: 999; pointer-events: none;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.04) 2px,
-        rgba(0,0,0,0.04) 4px
-      );
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
     }
 
-    .app {
-      display: flex; flex-direction: column;
-      width: 100vw; height: 100vh;
-      padding: 0;
-    }
+    .app { display: flex; flex-direction: column; width: 100vw; height: 100vh; }
 
-    /* ── TOP HEADER ── */
+    /* ── HEADER ── */
     header {
-      display: flex; align-items: center; gap: 0;
+      display: flex; align-items: center;
       height: 52px; min-height: 52px;
       border-bottom: 1px solid var(--border);
       background: var(--panel);
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
 
     header::after {
       content: '';
-      position: absolute; bottom: 0; left: 0; right: 0;
-      height: 1px;
+      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
       background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
       opacity: 0.5;
     }
 
     .logo-block {
       display: flex; align-items: center; gap: 10px;
-      padding: 0 20px;
-      border-right: 1px solid var(--border);
-      height: 100%;
+      padding: 0 20px; border-right: 1px solid var(--border); height: 100%;
     }
 
     .logo-icon {
@@ -96,277 +80,215 @@
       clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
     }
 
-    .logo-text {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 20px;
-      letter-spacing: 3px;
-      color: #fff;
-    }
-
-    .logo-sub {
-      font-size: 9px;
-      letter-spacing: 2px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      margin-top: -2px;
-    }
+    .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: #fff; }
+    .logo-sub  { font-size: 9px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-top: -2px; }
 
     .header-stat {
       display: flex; flex-direction: column; justify-content: center;
-      padding: 0 24px;
-      border-right: 1px solid var(--border);
-      height: 100%;
+      padding: 0 24px; border-right: 1px solid var(--border); height: 100%;
     }
 
-    .stat-label {
-      font-size: 9px;
-      letter-spacing: 2px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-    }
-
-    .stat-value {
-      font-size: 15px;
-      font-weight: 600;
-      color: #fff;
-      letter-spacing: 1px;
-      transition: color 0.3s;
-    }
-
+    .stat-label { font-size: 9px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+    .stat-value { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 1px; transition: color 0.3s; }
     .stat-value.up   { color: var(--up);   text-shadow: var(--glow-g); }
-    .stat-value.down { color: var(--down);  text-shadow: var(--glow-r); }
+    .stat-value.down { color: var(--down); text-shadow: var(--glow-r); }
 
-    .live-badge {
-      display: flex; align-items: center; gap: 7px;
-      padding: 0 20px;
-      margin-left: auto;
-    }
+    .live-badge { display: flex; align-items: center; gap: 7px; padding: 0 20px; margin-left: auto; }
 
     .live-dot {
       width: 8px; height: 8px; border-radius: 50%;
-      background: var(--up);
-      box-shadow: var(--glow-g);
+      background: var(--up); box-shadow: var(--glow-g);
       animation: pulse 1.4s ease-in-out infinite;
     }
-
-    .live-dot.error {
-      background: var(--down);
-      box-shadow: var(--glow-r);
-      animation: none;
-    }
+    .live-dot.error  { background: var(--down); box-shadow: var(--glow-r); animation: none; }
+    .live-dot.warn   { background: #ffa726; animation: none; }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1;   transform: scale(1); }
+      0%, 100% { opacity: 1; transform: scale(1); }
       50%       { opacity: 0.4; transform: scale(0.7); }
     }
 
-    .live-text {
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-    }
+    .live-text { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
 
-    /* ── TICKER HERO ── */
+    /* cookie btn in header */
+    .cookie-btn {
+      display: flex; align-items: center; gap: 6px;
+      margin-right: 16px; padding: 6px 14px;
+      background: none; border: 1px solid var(--border2);
+      color: var(--text-dim); font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+      cursor: pointer; border-radius: 3px; transition: all 0.15s;
+    }
+    .cookie-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── HERO ── */
     .hero {
       display: flex; align-items: flex-end; gap: 16px;
       padding: 14px 24px 0;
       border-bottom: 1px solid var(--border);
-      background: var(--panel);
-      min-height: 80px;
+      background: var(--panel); min-height: 80px;
     }
 
     .current-count {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 62px;
-      line-height: 1;
-      letter-spacing: 2px;
-      color: #fff;
+      font-family: 'Bebas Neue', sans-serif; font-size: 62px;
+      line-height: 1; letter-spacing: 2px; color: #fff;
       transition: color 0.25s, text-shadow 0.25s;
     }
-
     .current-count.up   { color: var(--up);   text-shadow: var(--glow-g); }
-    .current-count.down { color: var(--down);  text-shadow: var(--glow-r); }
+    .current-count.down { color: var(--down); text-shadow: var(--glow-r); }
 
-    .count-change {
-      font-size: 18px;
-      font-weight: 500;
-      margin-bottom: 10px;
-      letter-spacing: 1px;
-      transition: color 0.25s;
-    }
-
+    .count-change { font-size: 18px; font-weight: 500; margin-bottom: 10px; letter-spacing: 1px; transition: color 0.25s; }
     .count-change.up   { color: var(--up); }
     .count-change.down { color: var(--down); }
 
     .ohlc-strip {
-      display: flex; gap: 0;
-      margin-left: auto;
-      margin-bottom: 8px;
-      border: 1px solid var(--border2);
-      border-radius: 4px;
-      overflow: hidden;
+      display: flex; gap: 0; margin-left: auto; margin-bottom: 8px;
+      border: 1px solid var(--border2); border-radius: 4px; overflow: hidden;
     }
 
-    .ohlc-item {
-      display: flex; flex-direction: column;
-      padding: 6px 14px;
-      border-right: 1px solid var(--border2);
-    }
+    .ohlc-item { display: flex; flex-direction: column; padding: 6px 14px; border-right: 1px solid var(--border2); }
     .ohlc-item:last-child { border-right: none; }
-
-    .ohlc-key {
-      font-size: 9px;
-      letter-spacing: 2px;
-      color: var(--text-faint);
-      text-transform: uppercase;
-    }
-
-    .ohlc-val {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: 1px;
-      margin-top: 2px;
-    }
-
+    .ohlc-key  { font-size: 9px; letter-spacing: 2px; color: var(--text-faint); text-transform: uppercase; }
+    .ohlc-val  { font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: 1px; margin-top: 2px; }
     .ohlc-val.green { color: var(--up); }
     .ohlc-val.red   { color: var(--down); }
 
-    /* ── TIMEFRAME BAR ── */
+    /* ── TF BAR ── */
     .tf-bar {
       display: flex; align-items: center; gap: 2px;
-      padding: 8px 20px;
+      padding: 8px 20px; border-bottom: 1px solid var(--border); background: var(--bg);
+    }
+
+    .tf-label { font-size: 9px; letter-spacing: 2px; color: var(--text-faint); text-transform: uppercase; margin-right: 8px; }
+
+    .tf-btn {
+      background: none; border: 1px solid transparent; color: var(--text-dim);
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px;
+      padding: 4px 12px; cursor: pointer; border-radius: 3px; transition: all 0.15s; text-transform: uppercase;
+    }
+    .tf-btn:hover  { color: var(--text); border-color: var(--border2); }
+    .tf-btn.active { background: var(--border2); border-color: var(--accent); color: var(--accent); }
+
+    .separator { flex: 1; }
+    .status-line { font-size: 10px; color: var(--text-faint); letter-spacing: 1px; }
+
+    /* ── CHART ── */
+    .chart-wrap { flex: 1; position: relative; overflow: hidden; background: var(--bg); }
+    #chart { width: 100%; height: 100%; }
+
+    .overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+      background: var(--bg); z-index: 10; transition: opacity 0.5s;
+    }
+    .overlay.hidden { opacity: 0; pointer-events: none; }
+    .overlay-icon { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 4px; color: var(--text-faint); }
+    .overlay-text { font-size: 12px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+    .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      height: 28px; min-height: 28px;
+      display: flex; align-items: center;
+      border-top: 1px solid var(--border); background: var(--panel);
+      font-size: 10px; color: var(--text-faint); letter-spacing: 1px; overflow: hidden;
+    }
+
+    .sb-item {
+      padding: 0 16px; border-right: 1px solid var(--border);
+      white-space: nowrap; display: flex; align-items: center; gap: 6px; height: 100%;
+    }
+    .sb-accent { color: var(--text-dim); }
+
+    /* ── COOKIE MODAL ── */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(6,8,16,0.92);
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-backdrop.hidden { display: none; }
+
+    .modal {
+      width: 560px; max-width: 95vw;
+      background: var(--panel);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(79,195,247,0.1);
+    }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
       border-bottom: 1px solid var(--border);
       background: var(--bg);
     }
 
-    .tf-label {
-      font-size: 9px;
-      letter-spacing: 2px;
-      color: var(--text-faint);
-      text-transform: uppercase;
-      margin-right: 8px;
+    .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--accent); }
+
+    .modal-close {
+      background: none; border: none; color: var(--text-dim);
+      font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .modal-body { padding: 20px; }
+
+    .modal-step {
+      display: flex; gap: 14px; margin-bottom: 16px;
     }
 
-    .tf-btn {
-      background: none;
-      border: 1px solid transparent;
-      color: var(--text-dim);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 1px;
-      padding: 4px 12px;
-      cursor: pointer;
-      border-radius: 3px;
-      transition: all 0.15s;
-      text-transform: uppercase;
+    .step-num {
+      width: 24px; height: 24px; min-width: 24px;
+      border-radius: 50%; border: 1px solid var(--accent);
+      color: var(--accent); font-size: 11px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .tf-btn:hover {
-      color: var(--text);
-      border-color: var(--border2);
+    .step-text { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+    .step-text code {
+      background: var(--bg); border: 1px solid var(--border2);
+      padding: 1px 6px; border-radius: 3px; color: var(--accent);
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
     }
 
-    .tf-btn.active {
-      background: var(--border2);
-      border-color: var(--accent);
-      color: var(--accent);
+    .modal-divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+    .cookie-input-label { font-size: 10px; letter-spacing: 2px; color: var(--text-faint); text-transform: uppercase; margin-bottom: 8px; }
+
+    .cookie-input {
+      width: 100%; padding: 10px 14px;
+      background: var(--bg); border: 1px solid var(--border2);
+      border-radius: 4px; color: var(--text);
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      resize: vertical; min-height: 72px;
+      outline: none; transition: border-color 0.15s;
+    }
+    .cookie-input:focus { border-color: var(--accent); }
+    .cookie-input::placeholder { color: var(--text-faint); }
+
+    .modal-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-top: 1px solid var(--border); background: var(--bg);
     }
 
-    .separator {
-      flex: 1;
+    .modal-error { font-size: 11px; color: var(--down); letter-spacing: 1px; }
+
+    .modal-save-btn {
+      background: var(--accent); border: none; color: #060810;
+      font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+      font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      padding: 10px 24px; border-radius: 4px; cursor: pointer; transition: opacity 0.15s;
     }
+    .modal-save-btn:hover { opacity: 0.85; }
 
-    .status-line {
-      font-size: 10px;
-      color: var(--text-faint);
-      letter-spacing: 1px;
-    }
-
-    /* ── CHART AREA ── */
-    .chart-wrap {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      background: var(--bg);
-    }
-
-    #chart {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* ── ERROR / LOADING overlay ── */
-    .overlay {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 12px;
-      background: var(--bg);
-      z-index: 10;
-      transition: opacity 0.5s;
-    }
-
-    .overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .overlay-icon {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 48px;
-      letter-spacing: 4px;
-      color: var(--text-faint);
-    }
-
-    .overlay-text {
-      font-size: 12px;
-      letter-spacing: 2px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-    }
-
-    .blink {
-      animation: blink 1s step-end infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0; }
-    }
-
-    /* ── BOTTOM STATUS BAR ── */
-    .status-bar {
-      height: 28px; min-height: 28px;
-      display: flex; align-items: center;
-      gap: 0;
-      border-top: 1px solid var(--border);
-      background: var(--panel);
-      font-size: 10px;
-      color: var(--text-faint);
-      letter-spacing: 1px;
-      overflow: hidden;
-    }
-
-    .sb-item {
-      padding: 0 16px;
-      border-right: 1px solid var(--border);
-      white-space: nowrap;
-      display: flex; align-items: center; gap: 6px;
-      height: 100%;
-    }
-
-    .sb-accent { color: var(--text-dim); }
-
-    /* responsive */
     @media (max-width: 640px) {
       .hero { flex-wrap: wrap; min-height: auto; padding: 10px 16px 0; }
       .current-count { font-size: 42px; }
       .ohlc-strip { margin-left: 0; width: 100%; }
       .ohlc-item { padding: 6px 10px; }
-      header { height: 44px; }
-      .logo-text { font-size: 17px; }
     }
   </style>
 </head>
@@ -387,21 +309,20 @@
       <div class="stat-label">Session High</div>
       <div class="stat-value" id="hdr-high">—</div>
     </div>
-
     <div class="header-stat">
       <div class="stat-label">Session Low</div>
       <div class="stat-value" id="hdr-low">—</div>
     </div>
-
     <div class="header-stat">
       <div class="stat-label">Samples</div>
       <div class="stat-value" id="hdr-samples">0</div>
     </div>
-
     <div class="header-stat">
       <div class="stat-label">Candles</div>
       <div class="stat-value" id="hdr-candles">0</div>
     </div>
+
+    <button class="cookie-btn" id="cookie-btn" onclick="openModal()">⚙ Auth Cookie</button>
 
     <div class="live-badge">
       <div class="live-dot" id="live-dot"></div>
@@ -416,27 +337,12 @@
     </div>
     <div class="count-change" id="count-change"></div>
 
-    <div class="ohlc-strip" id="ohlc-strip">
-      <div class="ohlc-item">
-        <div class="ohlc-key">O</div>
-        <div class="ohlc-val" id="ohlc-o">—</div>
-      </div>
-      <div class="ohlc-item">
-        <div class="ohlc-key">H</div>
-        <div class="ohlc-val green" id="ohlc-h">—</div>
-      </div>
-      <div class="ohlc-item">
-        <div class="ohlc-key">L</div>
-        <div class="ohlc-val red" id="ohlc-l">—</div>
-      </div>
-      <div class="ohlc-item">
-        <div class="ohlc-key">C</div>
-        <div class="ohlc-val" id="ohlc-c">—</div>
-      </div>
-      <div class="ohlc-item">
-        <div class="ohlc-key">VOL</div>
-        <div class="ohlc-val" id="ohlc-v">—</div>
-      </div>
+    <div class="ohlc-strip">
+      <div class="ohlc-item"><div class="ohlc-key">O</div><div class="ohlc-val" id="ohlc-o">—</div></div>
+      <div class="ohlc-item"><div class="ohlc-key">H</div><div class="ohlc-val green" id="ohlc-h">—</div></div>
+      <div class="ohlc-item"><div class="ohlc-key">L</div><div class="ohlc-val red" id="ohlc-l">—</div></div>
+      <div class="ohlc-item"><div class="ohlc-key">C</div><div class="ohlc-val" id="ohlc-c">—</div></div>
+      <div class="ohlc-item"><div class="ohlc-key">VOL</div><div class="ohlc-val" id="ohlc-v">—</div></div>
     </div>
   </div>
 
@@ -456,61 +362,81 @@
     <div id="chart"></div>
     <div class="overlay" id="overlay">
       <div class="overlay-icon">AXIOM</div>
-      <div class="overlay-text">Connecting to feed<span class="blink">_</span></div>
+      <div class="overlay-text" id="overlay-text">Connecting to feed<span class="blink">_</span></div>
     </div>
   </div>
 
   <!-- STATUS BAR -->
   <div class="status-bar">
-    <div class="sb-item">
-      <span>AXIOM.TRADE</span>
-    </div>
-    <div class="sb-item">
-      <span>SOURCE</span>
-      <span class="sb-accent">api6.axiom.trade/online-users-count</span>
-    </div>
-    <div class="sb-item">
-      <span>INTERVAL</span>
-      <span class="sb-accent">1s</span>
-    </div>
-    <div class="sb-item">
-      <span>LAST UPDATE</span>
-      <span class="sb-accent" id="sb-time">—</span>
-    </div>
-    <div class="sb-item">
-      <span id="sb-status" class="sb-accent">INITIALIZING</span>
-    </div>
+    <div class="sb-item"><span>AXIOM.TRADE</span></div>
+    <div class="sb-item"><span>SOURCE</span><span class="sb-accent">localhost:3456/api/users</span></div>
+    <div class="sb-item"><span>INTERVAL</span><span class="sb-accent">1s</span></div>
+    <div class="sb-item"><span>LAST UPDATE</span><span class="sb-accent" id="sb-time">—</span></div>
+    <div class="sb-item"><span id="sb-status" class="sb-accent">INITIALIZING</span></div>
   </div>
 
+</div>
+
+<!-- COOKIE MODAL -->
+<div class="modal-backdrop hidden" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Auth Cookie Setup</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-step">
+        <div class="step-num">1</div>
+        <div class="step-text">Open <strong style="color:#fff">axiom.trade</strong> in your browser and log in to your account.</div>
+      </div>
+      <div class="modal-step">
+        <div class="step-num">2</div>
+        <div class="step-text">Open DevTools (<code>F12</code> or <code>Cmd+Option+I</code>), go to the <code>Network</code> tab, refresh the page, and click any request to <code>api6.axiom.trade</code>.</div>
+      </div>
+      <div class="modal-step">
+        <div class="step-num">3</div>
+        <div class="step-text">Under <code>Request Headers</code>, find the <code>cookie</code> header. Copy the entire value (it's a long string).</div>
+      </div>
+      <div class="modal-step">
+        <div class="step-num">4</div>
+        <div class="step-text">Paste it below and click Save. The cookie is stored locally in <code>.axiom-cookie</code> and never leaves your machine.</div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="cookie-input-label">Cookie Value</div>
+      <textarea class="cookie-input" id="cookie-input" placeholder="Paste your axiom.trade cookie string here..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-error" id="modal-error"></span>
+      <button class="modal-save-btn" onclick="saveCookie()">Save &amp; Connect</button>
+    </div>
+  </div>
 </div>
 
 <script>
 (function () {
   'use strict';
 
-  // ── Config ───────────────────────────────────────────────────────────
-  const API_URL    = 'https://api6.axiom.trade/online-users-count';
-  const POLL_MS    = 1000;
+  const API_URL  = '/api/users';
+  const POLL_MS  = 1000;
 
-  // ── State ────────────────────────────────────────────────────────────
-  let timeframeSec = 30;
-  let rawSamples   = [];      // { t: epochMs, v: number }
-  let candles      = [];      // { time, open, high, low, close, volume }
+  let timeframeSec  = 30;
+  let rawSamples    = [];
+  let candles       = [];
   let currentCandle = null;
-  let sessionHigh  = null;
-  let sessionLow   = null;
-  let lastValue    = null;
-  let sampleCount  = 0;
+  let sessionHigh   = null;
+  let sessionLow    = null;
+  let lastValue     = null;
+  let sampleCount   = 0;
 
-  // ── Chart setup ──────────────────────────────────────────────────────
+  // ── Chart ──────────────────────────────────────────────────────────────
   const chartEl = document.getElementById('chart');
 
   const chart = LightweightCharts.createChart(chartEl, {
     layout: {
-      background:  { color: '#060810' },
-      textColor:   '#5a6180',
-      fontFamily:  "'IBM Plex Mono', monospace",
-      fontSize:    11,
+      background: { color: '#060810' },
+      textColor:  '#5a6180',
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontSize:   11,
     },
     grid: {
       vertLines: { color: '#0f1220', style: 1 },
@@ -522,84 +448,64 @@
       horzLine: { color: 'rgba(79,195,247,0.3)', labelBackgroundColor: '#0b0e18' },
     },
     rightPriceScale: {
-      borderColor: '#161a2a',
+      borderColor:  '#161a2a',
       scaleMargins: { top: 0.05, bottom: 0.25 },
     },
     timeScale: {
-      borderColor:        '#161a2a',
-      timeVisible:        true,
-      secondsVisible:     true,
-      fixLeftEdge:        false,
-      fixRightEdge:       false,
-      rightOffset:        8,
-      shiftVisibleRangeOnNewBar: true,
+      borderColor:                  '#161a2a',
+      timeVisible:                  true,
+      secondsVisible:               true,
+      rightOffset:                  8,
+      shiftVisibleRangeOnNewBar:    true,
     },
-    handleScroll:    { mouseWheel: true, pressedMouseMove: true },
-    handleScale:     { mouseWheel: true, pinch: true },
+    handleScroll: { mouseWheel: true, pressedMouseMove: true },
+    handleScale:  { mouseWheel: true, pinch: true },
   });
 
   const candleSeries = chart.addCandlestickSeries({
-    upColor:          '#00e676',
-    downColor:        '#ff3d5a',
-    borderUpColor:    '#00e676',
-    borderDownColor:  '#ff3d5a',
-    wickUpColor:      'rgba(0,230,118,0.6)',
-    wickDownColor:    'rgba(255,61,90,0.6)',
-    priceLineVisible: true,
-    priceLineColor:   'rgba(79,195,247,0.4)',
+    upColor:         '#00e676',
+    downColor:       '#ff3d5a',
+    borderUpColor:   '#00e676',
+    borderDownColor: '#ff3d5a',
+    wickUpColor:     'rgba(0,230,118,0.6)',
+    wickDownColor:   'rgba(255,61,90,0.6)',
+    priceLineColor:  'rgba(79,195,247,0.4)',
     lastValueVisible: true,
   });
 
   const volumeSeries = chart.addHistogramSeries({
-    priceFormat:   { type: 'volume' },
-    priceScaleId:  'vol',
-    color:         'rgba(79,195,247,0.18)',
+    priceFormat:  { type: 'volume' },
+    priceScaleId: 'vol',
+    color:        'rgba(79,195,247,0.18)',
   });
 
-  chart.priceScale('vol').applyOptions({
-    scaleMargins: { top: 0.82, bottom: 0 },
-  });
+  chart.priceScale('vol').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
 
-  // ── Resize observer ──────────────────────────────────────────────────
-  const resizeObs = new ResizeObserver(entries => {
+  new ResizeObserver(entries => {
     const e = entries[0];
     if (e) chart.applyOptions({ width: e.contentRect.width, height: e.contentRect.height });
-  });
-  resizeObs.observe(chartEl);
+  }).observe(chartEl);
 
-  // ── Parse API value ───────────────────────────────────────────────────
+  // ── Helpers ────────────────────────────────────────────────────────────
   function parseCount(data) {
-    if (typeof data === 'number')           return data;
-    if (typeof data === 'string')           return parseInt(data, 10);
+    if (typeof data === 'number') return data;
+    if (typeof data === 'string') return parseInt(data, 10);
     if (data && typeof data === 'object') {
-      const v = data.count ?? data.onlineUsers ?? data.online_users
-             ?? data.users ?? data.total ?? Object.values(data)[0];
+      const v = data.count ?? data.onlineUsers ?? data.online_users ?? data.users ?? data.total ?? Object.values(data)[0];
       return typeof v === 'number' ? v : parseInt(v, 10);
     }
     return NaN;
   }
 
-  // ── Candle math ───────────────────────────────────────────────────────
   function floorToTF(epochMs) {
     return Math.floor(epochMs / 1000 / timeframeSec) * timeframeSec;
   }
 
   function ingestValue(value, epochMs) {
     const tfTime = floorToTF(epochMs);
-
     if (!currentCandle || currentCandle.time !== tfTime) {
-      // push completed candle
-      if (currentCandle) {
-        candles.push({ ...currentCandle });
-      }
-      currentCandle = {
-        time:   tfTime,
-        open:   value,
-        high:   value,
-        low:    value,
-        close:  value,
-        volume: 1,
-      };
+      if (currentCandle) candles.push({ ...currentCandle });
+      currentCandle = { time: tfTime, open: value, high: value, low: value, close: value, volume: 1 };
     } else {
       if (value > currentCandle.high) currentCandle.high = value;
       if (value < currentCandle.low)  currentCandle.low  = value;
@@ -608,32 +514,27 @@
     }
   }
 
-  // ── Push to chart ─────────────────────────────────────────────────────
   function pushToChart() {
     if (!currentCandle) return;
-
-    const allCandles = [...candles, currentCandle];
-    const allVolume  = allCandles.map(c => ({
+    const all = [...candles, currentCandle];
+    candleSeries.setData(all);
+    volumeSeries.setData(all.map(c => ({
       time:  c.time,
       value: c.volume,
       color: c.close >= c.open ? 'rgba(0,230,118,0.22)' : 'rgba(255,61,90,0.18)',
-    }));
-
-    candleSeries.setData(allCandles);
-    volumeSeries.setData(allVolume);
-
-    // scroll right
+    })));
     chart.timeScale().scrollToRealTime();
   }
 
-  // ── Update DOM ────────────────────────────────────────────────────────
+  function rebuildCandles() {
+    candles = []; currentCandle = null;
+    for (const s of rawSamples) ingestValue(s.v, s.t);
+    pushToChart();
+  }
+
+  // ── DOM refs ──────────────────────────────────────────────────────────
   const countEl    = document.getElementById('count-display');
   const changeEl   = document.getElementById('count-change');
-  const ohlcO      = document.getElementById('ohlc-o');
-  const ohlcH      = document.getElementById('ohlc-h');
-  const ohlcL      = document.getElementById('ohlc-l');
-  const ohlcC      = document.getElementById('ohlc-c');
-  const ohlcV      = document.getElementById('ohlc-v');
   const hdrHigh    = document.getElementById('hdr-high');
   const hdrLow     = document.getElementById('hdr-low');
   const hdrSamples = document.getElementById('hdr-samples');
@@ -644,52 +545,36 @@
   const sbStatus   = document.getElementById('sb-status');
   const nextCandle = document.getElementById('next-candle');
   const overlay    = document.getElementById('overlay');
+  const overlayTxt = document.getElementById('overlay-text');
 
   function updateDOM(value) {
     const delta = lastValue !== null ? value - lastValue : 0;
     const dir   = delta > 0 ? 'up' : delta < 0 ? 'down' : '';
 
-    // big number
     countEl.textContent = value.toLocaleString();
     countEl.className   = 'current-count ' + dir;
 
-    // change indicator
     if (delta !== 0) {
       changeEl.textContent = (delta > 0 ? '+' : '') + delta.toLocaleString();
       changeEl.className   = 'count-change ' + dir;
     }
 
-    // OHLC strip from current candle
     if (currentCandle) {
-      ohlcO.textContent = currentCandle.open.toLocaleString();
-      ohlcH.textContent = currentCandle.high.toLocaleString();
-      ohlcL.textContent = currentCandle.low.toLocaleString();
-      ohlcC.textContent = currentCandle.close.toLocaleString();
-      ohlcV.textContent = currentCandle.volume;
+      document.getElementById('ohlc-o').textContent = currentCandle.open.toLocaleString();
+      document.getElementById('ohlc-h').textContent = currentCandle.high.toLocaleString();
+      document.getElementById('ohlc-l').textContent = currentCandle.low.toLocaleString();
+      document.getElementById('ohlc-c').textContent = currentCandle.close.toLocaleString();
+      document.getElementById('ohlc-v').textContent = currentCandle.volume;
     }
 
-    // session stats
     if (sessionHigh !== null) {
-      hdrHigh.textContent  = sessionHigh.toLocaleString();
-      hdrLow.textContent   = sessionLow.toLocaleString();
-      const prev = lastValue;
-      if (prev !== null) {
-        hdrHigh.className = 'stat-value' + (value >= prev ? ' up' : '');
-        hdrLow.className  = 'stat-value' + (value <= prev ? ' down' : '');
-      }
+      hdrHigh.textContent = sessionHigh.toLocaleString();
+      hdrLow.textContent  = sessionLow.toLocaleString();
     }
 
     hdrSamples.textContent = sampleCount.toLocaleString();
     hdrCandles.textContent = (candles.length + (currentCandle ? 1 : 0)).toString();
 
-    // next candle countdown
-    const now     = Date.now();
-    const tfTime  = floorToTF(now);
-    const nextTs  = (tfTime + timeframeSec) * 1000;
-    const secLeft = Math.max(0, Math.round((nextTs - now) / 1000));
-    nextCandle.textContent = `next candle in ${secLeft}s`;
-
-    // status bar time
     sbTime.textContent = new Date().toLocaleTimeString('en-US', {
       hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit',
     });
@@ -697,30 +582,91 @@
     lastValue = value;
   }
 
+  // ── Status helpers ────────────────────────────────────────────────────
+  let connected = false;
+
   function setConnected() {
     overlay.classList.add('hidden');
-    liveDot.className  = 'live-dot';
+    liveDot.className    = 'live-dot';
     liveText.textContent = 'live';
     sbStatus.textContent = 'CONNECTED';
+    connected = true;
+  }
+
+  function setNeedsCookie() {
+    overlay.classList.remove('hidden');
+    overlayTxt.innerHTML = 'Auth cookie required &nbsp;<span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="openModal()">Set up now →</span>';
+    liveDot.className    = 'live-dot warn';
+    liveText.textContent = 'setup';
+    sbStatus.textContent = 'AUTH REQUIRED';
   }
 
   function setError(msg) {
-    liveDot.className  = 'live-dot error';
+    liveDot.className    = 'live-dot error';
     liveText.textContent = 'error';
     sbStatus.textContent = msg || 'ERROR';
   }
 
-  // ── Rebuild candles from scratch on TF change ─────────────────────────
-  function rebuildCandles() {
-    candles       = [];
-    currentCandle = null;
-    for (const s of rawSamples) {
-      ingestValue(s.v, s.t);
+  // ── Poll ──────────────────────────────────────────────────────────────
+  let failCount  = 0;
+  let needCookie = false;
+
+  async function poll() {
+    try {
+      const res  = await fetch(API_URL, { cache: 'no-store' });
+      const data = await res.json();
+
+      if (data && data.error === 'no_cookie') {
+        if (!needCookie) { needCookie = true; setNeedsCookie(); }
+        return;
+      }
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${JSON.stringify(data)}`);
+
+      const val = parseCount(data);
+      if (isNaN(val)) throw new Error('unparseable: ' + JSON.stringify(data));
+
+      needCookie = false;
+      failCount  = 0;
+      sampleCount++;
+
+      const now = Date.now();
+      rawSamples.push({ t: now, v: val });
+
+      if (sessionHigh === null || val > sessionHigh) sessionHigh = val;
+      if (sessionLow  === null || val < sessionLow)  sessionLow  = val;
+
+      ingestValue(val, now);
+      pushToChart();
+      updateDOM(val);
+
+      if (!connected) setConnected();
+
+    } catch (err) {
+      failCount++;
+      // Distinguish server-not-running vs API error
+      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+        setError('SERVER OFFLINE — run: node server.js');
+        overlayTxt.innerHTML = 'Server not running<br><span style="font-size:11px;color:var(--text-faint);letter-spacing:1px">Run: <code style="color:var(--accent)">node server.js</code> in the project folder</span>';
+        overlay.classList.remove('hidden');
+      } else {
+        setError('FEED ERROR');
+      }
+      console.warn('[axiom-chart]', err.message);
     }
-    pushToChart();
   }
 
-  // ── Timeframe buttons ─────────────────────────────────────────────────
+  // Countdown ticker
+  setInterval(() => {
+    if (!currentCandle) return;
+    const now     = Date.now();
+    const tfTime  = floorToTF(now);
+    const nextTs  = (tfTime + timeframeSec) * 1000;
+    const secLeft = Math.max(0, Math.round((nextTs - now) / 1000));
+    nextCandle.textContent = `next candle in ${secLeft}s`;
+  }, 250);
+
+  // TF buttons
   document.querySelectorAll('.tf-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
@@ -730,54 +676,39 @@
     });
   });
 
-  // ── Poll ──────────────────────────────────────────────────────────────
-  let connected = false;
-  let failCount = 0;
-
-  async function poll() {
-    try {
-      const res  = await fetch(API_URL, { cache: 'no-store' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const val  = parseCount(data);
-      if (isNaN(val)) throw new Error('unparseable response');
-
-      failCount = 0;
-      sampleCount++;
-
-      const now = Date.now();
-      rawSamples.push({ t: now, v: val });
-
-      // session hi/lo
-      if (sessionHigh === null || val > sessionHigh) sessionHigh = val;
-      if (sessionLow  === null || val < sessionLow)  sessionLow  = val;
-
-      ingestValue(val, now);
-      pushToChart();
-      updateDOM(val);
-
-      if (!connected) { connected = true; setConnected(); }
-
-    } catch (err) {
-      failCount++;
-      setError(failCount > 3 ? 'FEED UNAVAILABLE' : 'RETRYING...');
-      console.warn('[axiom-chart]', err.message);
-    }
-  }
-
-  // Kick off
   poll();
   setInterval(poll, POLL_MS);
 
-  // Countdown tick (every second regardless)
-  setInterval(() => {
-    if (!currentCandle) return;
-    const now     = Date.now();
-    const tfTime  = floorToTF(now);
-    const nextTs  = (tfTime + timeframeSec) * 1000;
-    const secLeft = Math.max(0, Math.round((nextTs - now) / 1000));
-    nextCandle.textContent = `next candle in ${secLeft}s`;
-  }, 250);
+  // ── Cookie modal ──────────────────────────────────────────────────────
+  window.openModal  = () => document.getElementById('modal-backdrop').classList.remove('hidden');
+  window.closeModal = () => document.getElementById('modal-backdrop').classList.add('hidden');
+
+  window.saveCookie = async () => {
+    const val = document.getElementById('cookie-input').value.trim();
+    const err = document.getElementById('modal-error');
+    if (!val) { err.textContent = 'Cookie cannot be empty.'; return; }
+    err.textContent = '';
+    try {
+      const res = await fetch('/api/cookie', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cookie: val }),
+      });
+      if (!res.ok) throw new Error('save failed');
+      needCookie = false;
+      closeModal();
+      overlayTxt.innerHTML = 'Connecting to feed<span class="blink">_</span>';
+      overlay.classList.remove('hidden');
+      poll();
+    } catch (e) {
+      err.textContent = 'Failed to save. Is the server running?';
+    }
+  };
+
+  // Close modal on backdrop click
+  document.getElementById('modal-backdrop').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
 
 })();
 </script>
