@@ -3,29 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AXIOM // LIVE USER FEED</title>
+  <title>Axiom — Live User Chart</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <style>
     :root {
-      --bg:        #060810;
-      --panel:     #0b0e18;
-      --border:    #161a2a;
-      --border2:   #1e2438;
-      --up:        #00e676;
-      --up-dim:    rgba(0,230,118,0.12);
-      --down:      #ff3d5a;
-      --down-dim:  rgba(255,61,90,0.12);
-      --accent:    #4fc3f7;
-      --accent2:   #7c4dff;
-      --text:      #c8d0e8;
-      --text-dim:  #5a6180;
-      --text-faint:#2a2f45;
-      --glow-g:    0 0 20px rgba(0,230,118,0.35);
-      --glow-r:    0 0 20px rgba(255,61,90,0.35);
-      --glow-a:    0 0 20px rgba(79,195,247,0.3);
+      /* Axiom exact palette */
+      --bg:          #090909;
+      --surface:     #111111;
+      --surface2:    #161616;
+      --border:      #1e1e1e;
+      --border2:     #2a2a2a;
+
+      --accent:      #238FDB;
+      --accent-h:    #30ABE8;
+      --accent-a:    #1691CF;
+
+      --positive:    #00BE96;
+      --positive-bg: rgba(0,190,150,0.08);
+      --negative:    #FC4870;
+      --negative-bg: rgba(252,72,112,0.08);
+      --warning:     #DAAE45;
+
+      --text:        #F0F0F0;
+      --text-2:      #A0A0A0;
+      --text-3:      #555555;
+      --text-4:      #333333;
+
+      --radius:      3px;
+      --transition:  cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,380 +43,667 @@
       width: 100%; height: 100%;
       background: var(--bg);
       color: var(--text);
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: 'Roboto', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      line-height: 1.4;
       overflow: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 1000; pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-      opacity: 0.025;
-    }
-
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 999; pointer-events: none;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+      -webkit-font-smoothing: antialiased;
     }
 
     .app { display: flex; flex-direction: column; width: 100vw; height: 100vh; }
 
-    /* ── HEADER ── */
-    header {
+    /* ── TOP NAV ── */
+    nav {
       display: flex; align-items: center;
-      height: 52px; min-height: 52px;
+      height: 48px; min-height: 48px;
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
-      background: var(--panel);
-      position: relative; overflow: hidden;
+      padding: 0 16px;
+      gap: 8px;
+      position: relative;
+      z-index: 10;
     }
 
-    header::after {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
-      opacity: 0.5;
+    .nav-logo {
+      display: flex; align-items: center; gap: 8px;
+      margin-right: 8px;
+      text-decoration: none;
     }
 
-    .logo-block {
-      display: flex; align-items: center; gap: 10px;
-      padding: 0 20px; border-right: 1px solid var(--border); height: 100%;
+    /* Axiom-style logo mark */
+    .logo-mark {
+      width: 28px; height: 28px;
+      position: relative; flex-shrink: 0;
     }
 
-    .logo-icon {
-      width: 26px; height: 26px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+    .logo-mark svg {
+      width: 28px; height: 28px;
     }
 
-    .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: #fff; }
-    .logo-sub  { font-size: 9px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-top: -2px; }
-
-    .header-stat {
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 0 24px; border-right: 1px solid var(--border); height: 100%;
+    .logo-wordmark {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
     }
 
-    .stat-label { font-size: 9px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
-    .stat-value { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 1px; transition: color 0.3s; }
-    .stat-value.up   { color: var(--up);   text-shadow: var(--glow-g); }
-    .stat-value.down { color: var(--down); text-shadow: var(--glow-r); }
+    .nav-divider {
+      width: 1px; height: 20px;
+      background: var(--border2);
+      margin: 0 8px;
+    }
 
-    .live-badge { display: flex; align-items: center; gap: 7px; padding: 0 20px; margin-left: auto; }
+    .nav-pill {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-2);
+    }
+
+    .nav-pill .lucide { width: 12px; height: 12px; }
 
     .live-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--up); box-shadow: var(--glow-g);
-      animation: pulse 1.4s ease-in-out infinite;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--positive);
+      box-shadow: 0 0 8px var(--positive);
+      animation: pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
     }
-    .live-dot.error  { background: var(--down); box-shadow: var(--glow-r); animation: none; }
-    .live-dot.warn   { background: #ffa726; animation: none; }
+    .live-dot.error  { background: var(--negative); box-shadow: 0 0 8px var(--negative); animation: none; }
+    .live-dot.warn   { background: var(--warning);  box-shadow: 0 0 8px var(--warning);  animation: none; }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.4; transform: scale(0.7); }
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.35; }
     }
 
-    .live-text { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+    .nav-spacer { flex: 1; }
 
-    /* cookie btn in header */
-    .cookie-btn {
+    .nav-btn {
       display: flex; align-items: center; gap: 6px;
-      margin-right: 16px; padding: 6px 14px;
-      background: none; border: 1px solid var(--border2);
-      color: var(--text-dim); font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
-      cursor: pointer; border-radius: 3px; transition: all 0.15s;
+      padding: 6px 12px;
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      color: var(--text-2);
+      font-family: 'Roboto', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 120ms var(--transition);
     }
-    .cookie-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn .lucide { width: 13px; height: 13px; }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(35,143,219,0.06); }
 
-    /* ── HERO ── */
-    .hero {
-      display: flex; align-items: flex-end; gap: 16px;
-      padding: 14px 24px 0;
+    /* ── TICKER ROW ── */
+    .ticker-row {
+      display: flex; align-items: stretch;
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
-      background: var(--panel); min-height: 80px;
+      min-height: 68px;
+      padding: 12px 16px;
+      gap: 24px;
     }
 
-    .current-count {
-      font-family: 'Bebas Neue', sans-serif; font-size: 62px;
-      line-height: 1; letter-spacing: 2px; color: #fff;
-      transition: color 0.25s, text-shadow 0.25s;
-    }
-    .current-count.up   { color: var(--up);   text-shadow: var(--glow-g); }
-    .current-count.down { color: var(--down); text-shadow: var(--glow-r); }
-
-    .count-change { font-size: 18px; font-weight: 500; margin-bottom: 10px; letter-spacing: 1px; transition: color 0.25s; }
-    .count-change.up   { color: var(--up); }
-    .count-change.down { color: var(--down); }
-
-    .ohlc-strip {
-      display: flex; gap: 0; margin-left: auto; margin-bottom: 8px;
-      border: 1px solid var(--border2); border-radius: 4px; overflow: hidden;
+    .ticker-main {
+      display: flex; flex-direction: column; justify-content: space-between;
+      gap: 4px;
     }
 
-    .ohlc-item { display: flex; flex-direction: column; padding: 6px 14px; border-right: 1px solid var(--border2); }
-    .ohlc-item:last-child { border-right: none; }
-    .ohlc-key  { font-size: 9px; letter-spacing: 2px; color: var(--text-faint); text-transform: uppercase; }
-    .ohlc-val  { font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: 1px; margin-top: 2px; }
-    .ohlc-val.green { color: var(--up); }
-    .ohlc-val.red   { color: var(--down); }
+    .ticker-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .ticker-label .lucide { width: 12px; height: 12px; color: var(--accent); }
 
-    /* ── TF BAR ── */
-    .tf-bar {
-      display: flex; align-items: center; gap: 2px;
-      padding: 8px 20px; border-bottom: 1px solid var(--border); background: var(--bg);
+    .ticker-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      transition: color 200ms var(--transition);
+    }
+    .ticker-value.up   { color: var(--positive); }
+    .ticker-value.down { color: var(--negative); }
+
+    .ticker-change {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-3);
+      transition: color 200ms var(--transition);
+    }
+    .ticker-change.up   { color: var(--positive); }
+    .ticker-change.down { color: var(--negative); }
+
+    .ticker-divider {
+      width: 1px;
+      background: var(--border);
+      margin: 0;
+      align-self: stretch;
     }
 
-    .tf-label { font-size: 9px; letter-spacing: 2px; color: var(--text-faint); text-transform: uppercase; margin-right: 8px; }
+    .ticker-stats {
+      display: flex; align-items: center; gap: 0;
+    }
+
+    .stat-cell {
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 2px;
+      padding: 0 18px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-cell:first-child { padding-left: 0; }
+
+    .stat-key {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .stat-val {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .stat-val.pos { color: var(--positive); }
+    .stat-val.neg { color: var(--negative); }
+
+    .ticker-right {
+      margin-left: auto;
+      display: flex; flex-direction: column; justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    /* session hi/lo badge */
+    .session-stats {
+      display: flex; gap: 6px;
+    }
+
+    .badge {
+      display: flex; align-items: center; gap: 5px;
+      padding: 3px 8px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge .lucide { width: 10px; height: 10px; }
+    .badge.pos { background: var(--positive-bg); color: var(--positive); }
+    .badge.neg { background: var(--negative-bg); color: var(--negative); }
+    .badge.neutral { background: var(--surface2); color: var(--text-2); border: 1px solid var(--border2); }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      display: flex; align-items: center;
+      height: 36px; min-height: 36px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 12px;
+      gap: 2px;
+    }
+
+    .tf-group {
+      display: flex; align-items: center; gap: 1px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2px;
+    }
 
     .tf-btn {
-      background: none; border: 1px solid transparent; color: var(--text-dim);
-      font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px;
-      padding: 4px 12px; cursor: pointer; border-radius: 3px; transition: all 0.15s; text-transform: uppercase;
+      background: none;
+      border: none;
+      border-radius: 2px;
+      color: var(--text-2);
+      font-family: 'Roboto', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: all 100ms var(--transition);
+      line-height: 18px;
     }
-    .tf-btn:hover  { color: var(--text); border-color: var(--border2); }
-    .tf-btn.active { background: var(--border2); border-color: var(--accent); color: var(--accent); }
+    .tf-btn:hover  { color: var(--text); background: var(--surface2); }
+    .tf-btn.active { color: var(--accent); background: rgba(35,143,219,0.12); }
 
-    .separator { flex: 1; }
-    .status-line { font-size: 10px; color: var(--text-faint); letter-spacing: 1px; }
+    .toolbar-divider {
+      width: 1px; height: 20px;
+      background: var(--border);
+      margin: 0 8px;
+    }
+
+    .toolbar-spacer { flex: 1; }
+
+    .next-candle-wrap {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+    .next-candle-wrap .lucide { width: 12px; height: 12px; }
 
     /* ── CHART ── */
-    .chart-wrap { flex: 1; position: relative; overflow: hidden; background: var(--bg); }
+    .chart-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
     #chart { width: 100%; height: 100%; }
 
+    /* overlay */
     .overlay {
       position: absolute; inset: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-      background: var(--bg); z-index: 10; transition: opacity 0.5s;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px;
+      background: var(--bg);
+      z-index: 10;
+      transition: opacity 400ms var(--transition);
     }
     .overlay.hidden { opacity: 0; pointer-events: none; }
-    .overlay-icon { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 4px; color: var(--text-faint); }
-    .overlay-text { font-size: 12px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
-    .blink { animation: blink 1s step-end infinite; }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .overlay-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-3);
+    }
+    .overlay-icon .lucide { width: 22px; height: 22px; }
+
+    .overlay-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-2);
+    }
+
+    .overlay-sub {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    .overlay-action {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 16px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 120ms var(--transition);
+      margin-top: 4px;
+    }
+    .overlay-action:hover { background: var(--accent-h); }
+    .overlay-action .lucide { width: 13px; height: 13px; }
 
     /* ── STATUS BAR ── */
-    .status-bar {
-      height: 28px; min-height: 28px;
+    .statusbar {
+      height: 26px; min-height: 26px;
       display: flex; align-items: center;
-      border-top: 1px solid var(--border); background: var(--panel);
-      font-size: 10px; color: var(--text-faint); letter-spacing: 1px; overflow: hidden;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 0 12px;
+      gap: 0;
+      font-size: 11px;
+      color: var(--text-3);
     }
 
-    .sb-item {
-      padding: 0 16px; border-right: 1px solid var(--border);
-      white-space: nowrap; display: flex; align-items: center; gap: 6px; height: 100%;
+    .sb-cell {
+      display: flex; align-items: center; gap: 5px;
+      padding: 0 12px;
+      border-right: 1px solid var(--border);
+      height: 100%;
+      white-space: nowrap;
     }
-    .sb-accent { color: var(--text-dim); }
+    .sb-cell:first-child { padding-left: 0; }
+    .sb-cell .lucide { width: 11px; height: 11px; }
 
-    /* ── COOKIE MODAL ── */
+    .sb-val { color: var(--text-2); }
+    .sb-spacer { flex: 1; }
+
+    /* ── MODAL ── */
     .modal-backdrop {
-      position: fixed; inset: 0; z-index: 2000;
-      background: rgba(6,8,16,0.92);
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.75);
       display: flex; align-items: center; justify-content: center;
       backdrop-filter: blur(4px);
     }
     .modal-backdrop.hidden { display: none; }
 
     .modal {
-      width: 560px; max-width: 95vw;
-      background: var(--panel);
+      width: 520px; max-width: 95vw;
+      background: var(--surface);
       border: 1px solid var(--border2);
       border-radius: 6px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.6);
       overflow: hidden;
-      box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(79,195,247,0.1);
     }
 
     .modal-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px;
+      padding: 14px 16px;
       border-bottom: 1px solid var(--border);
-      background: var(--bg);
     }
 
-    .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--accent); }
+    .modal-title-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; font-weight: 600; color: var(--text);
+    }
+    .modal-title-row .lucide { width: 16px; height: 16px; color: var(--accent); }
 
     .modal-close {
-      background: none; border: none; color: var(--text-dim);
-      font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      color: var(--text-3);
+      cursor: pointer;
+      transition: all 120ms var(--transition);
     }
-    .modal-close:hover { color: var(--text); }
+    .modal-close:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+    .modal-close .lucide { width: 14px; height: 14px; }
 
-    .modal-body { padding: 20px; }
+    .modal-body { padding: 16px; }
 
-    .modal-step {
-      display: flex; gap: 14px; margin-bottom: 16px;
+    .step {
+      display: flex; gap: 12px;
+      margin-bottom: 14px;
     }
 
     .step-num {
-      width: 24px; height: 24px; min-width: 24px;
-      border-radius: 50%; border: 1px solid var(--accent);
-      color: var(--accent); font-size: 11px; font-weight: 600;
+      width: 20px; height: 20px; min-width: 20px;
+      border-radius: 50%;
+      background: rgba(35,143,219,0.12);
+      border: 1px solid rgba(35,143,219,0.3);
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
       display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
     }
 
-    .step-text { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+    .step-text {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.6;
+    }
+
+    .step-text strong { color: var(--text); font-weight: 500; }
+
     .step-text code {
-      background: var(--bg); border: 1px solid var(--border2);
-      padding: 1px 6px; border-radius: 3px; color: var(--accent);
-      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 2px;
+      padding: 1px 5px;
+      color: var(--accent);
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
     }
 
-    .modal-divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .modal-sep { height: 1px; background: var(--border); margin: 14px 0; }
 
-    .cookie-input-label { font-size: 10px; letter-spacing: 2px; color: var(--text-faint); text-transform: uppercase; margin-bottom: 8px; }
+    .input-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
 
     .cookie-input {
-      width: 100%; padding: 10px 14px;
-      background: var(--bg); border: 1px solid var(--border2);
-      border-radius: 4px; color: var(--text);
-      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-      resize: vertical; min-height: 72px;
-      outline: none; transition: border-color 0.15s;
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+      font-size: 12px;
+      resize: vertical;
+      min-height: 72px;
+      outline: none;
+      transition: border-color 120ms var(--transition);
     }
     .cookie-input:focus { border-color: var(--accent); }
-    .cookie-input::placeholder { color: var(--text-faint); }
+    .cookie-input::placeholder { color: var(--text-4); }
 
     .modal-footer {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px; border-top: 1px solid var(--border); background: var(--bg);
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
     }
 
-    .modal-error { font-size: 11px; color: var(--down); letter-spacing: 1px; }
+    .modal-err { font-size: 11px; color: var(--negative); }
 
-    .modal-save-btn {
-      background: var(--accent); border: none; color: #060810;
-      font-family: 'IBM Plex Mono', monospace; font-size: 12px;
-      font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
-      padding: 10px 24px; border-radius: 4px; cursor: pointer; transition: opacity 0.15s;
+    .btn-primary {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 18px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 120ms var(--transition);
     }
-    .modal-save-btn:hover { opacity: 0.85; }
+    .btn-primary:hover { background: var(--accent-h); }
+    .btn-primary .lucide { width: 14px; height: 14px; }
+
+    /* blink cursor */
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
+    .blink { animation: blink 1s step-end infinite; }
 
     @media (max-width: 640px) {
-      .hero { flex-wrap: wrap; min-height: auto; padding: 10px 16px 0; }
-      .current-count { font-size: 42px; }
-      .ohlc-strip { margin-left: 0; width: 100%; }
-      .ohlc-item { padding: 6px 10px; }
+      .ticker-right { display: none; }
+      .ticker-value { font-size: 22px; }
     }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- HEADER -->
-  <header>
-    <div class="logo-block">
-      <div class="logo-icon"></div>
-      <div>
-        <div class="logo-text">AXIOM</div>
-        <div class="logo-sub">User Chart</div>
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">
+      <div class="logo-mark">
+        <!-- Axiom-style logo: stylised 'A' / diamond mark -->
+        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2L26 22H2L14 2Z" fill="#238FDB" opacity="0.15" stroke="#238FDB" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M14 8L21 20H7L14 8Z" fill="#238FDB" opacity="0.6"/>
+        </svg>
+      </div>
+      <span class="logo-wordmark">Axiom</span>
+    </a>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-pill">
+      <div class="live-dot" id="live-dot"></div>
+      <span id="live-text">connecting</span>
+    </div>
+
+    <div class="nav-spacer"></div>
+
+    <button class="nav-btn" id="cookie-btn" onclick="openModal()">
+      <i data-lucide="key-round"></i>
+      Auth Cookie
+    </button>
+  </nav>
+
+  <!-- TICKER ROW -->
+  <div class="ticker-row">
+    <div class="ticker-main">
+      <div class="ticker-label">
+        <i data-lucide="users"></i>
+        Online Users · axiom.trade
+      </div>
+      <div class="ticker-value" id="count-display">—</div>
+      <div class="ticker-change" id="count-change">&nbsp;</div>
+    </div>
+
+    <div class="ticker-divider"></div>
+
+    <div class="ticker-stats">
+      <div class="stat-cell">
+        <div class="stat-key">Open</div>
+        <div class="stat-val" id="ohlc-o">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-key">High</div>
+        <div class="stat-val pos" id="ohlc-h">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-key">Low</div>
+        <div class="stat-val neg" id="ohlc-l">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-key">Close</div>
+        <div class="stat-val" id="ohlc-c">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-key">Samples</div>
+        <div class="stat-val" id="ohlc-v">—</div>
       </div>
     </div>
 
-    <div class="header-stat">
-      <div class="stat-label">Session High</div>
-      <div class="stat-value" id="hdr-high">—</div>
-    </div>
-    <div class="header-stat">
-      <div class="stat-label">Session Low</div>
-      <div class="stat-value" id="hdr-low">—</div>
-    </div>
-    <div class="header-stat">
-      <div class="stat-label">Samples</div>
-      <div class="stat-value" id="hdr-samples">0</div>
-    </div>
-    <div class="header-stat">
-      <div class="stat-label">Candles</div>
-      <div class="stat-value" id="hdr-candles">0</div>
-    </div>
-
-    <button class="cookie-btn" id="cookie-btn" onclick="openModal()">⚙ Auth Cookie</button>
-
-    <div class="live-badge">
-      <div class="live-dot" id="live-dot"></div>
-      <span class="live-text" id="live-text">connecting</span>
-    </div>
-  </header>
-
-  <!-- HERO -->
-  <div class="hero">
-    <div>
-      <div class="current-count" id="count-display">—</div>
-    </div>
-    <div class="count-change" id="count-change"></div>
-
-    <div class="ohlc-strip">
-      <div class="ohlc-item"><div class="ohlc-key">O</div><div class="ohlc-val" id="ohlc-o">—</div></div>
-      <div class="ohlc-item"><div class="ohlc-key">H</div><div class="ohlc-val green" id="ohlc-h">—</div></div>
-      <div class="ohlc-item"><div class="ohlc-key">L</div><div class="ohlc-val red" id="ohlc-l">—</div></div>
-      <div class="ohlc-item"><div class="ohlc-key">C</div><div class="ohlc-val" id="ohlc-c">—</div></div>
-      <div class="ohlc-item"><div class="ohlc-key">VOL</div><div class="ohlc-val" id="ohlc-v">—</div></div>
+    <div class="ticker-right">
+      <div class="session-stats">
+        <div class="badge pos">
+          <i data-lucide="arrow-up"></i>
+          <span id="sess-high">—</span>
+        </div>
+        <div class="badge neg">
+          <i data-lucide="arrow-down"></i>
+          <span id="sess-low">—</span>
+        </div>
+        <div class="badge neutral">
+          <i data-lucide="bar-chart-2"></i>
+          <span id="sess-samples">0 pts</span>
+        </div>
+      </div>
+      <div style="font-size:11px; color:var(--text-3); text-align:right;">
+        <span id="hdr-candles">0</span> candles &nbsp;·&nbsp; session
+      </div>
     </div>
   </div>
 
-  <!-- TIMEFRAME BAR -->
-  <div class="tf-bar">
-    <span class="tf-label">TF</span>
-    <button class="tf-btn" data-tf="10">10s</button>
-    <button class="tf-btn active" data-tf="30">30s</button>
-    <button class="tf-btn" data-tf="60">1m</button>
-    <button class="tf-btn" data-tf="300">5m</button>
-    <div class="separator"></div>
-    <span class="status-line" id="next-candle">next candle in —</span>
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="tf-group">
+      <button class="tf-btn" data-tf="10">10s</button>
+      <button class="tf-btn active" data-tf="30">30s</button>
+      <button class="tf-btn" data-tf="60">1m</button>
+      <button class="tf-btn" data-tf="300">5m</button>
+    </div>
+
+    <div class="toolbar-divider"></div>
+
+    <div class="next-candle-wrap">
+      <i data-lucide="clock"></i>
+      <span id="next-candle">next candle in —</span>
+    </div>
+
+    <div class="toolbar-spacer"></div>
+
+    <div class="next-candle-wrap" style="color:var(--text-3)">
+      <i data-lucide="activity"></i>
+      <span id="sb-status">Initializing</span>
+    </div>
   </div>
 
   <!-- CHART -->
   <div class="chart-wrap">
     <div id="chart"></div>
+
     <div class="overlay" id="overlay">
-      <div class="overlay-icon">AXIOM</div>
-      <div class="overlay-text" id="overlay-text">Connecting to feed<span class="blink">_</span></div>
+      <div class="overlay-icon"><i data-lucide="wifi-off"></i></div>
+      <div class="overlay-title" id="overlay-title">Connecting to feed</div>
+      <div class="overlay-sub" id="overlay-sub">Waiting for data<span class="blink">_</span></div>
     </div>
   </div>
 
   <!-- STATUS BAR -->
-  <div class="status-bar">
-    <div class="sb-item"><span>AXIOM.TRADE</span></div>
-    <div class="sb-item"><span>SOURCE</span><span class="sb-accent">localhost:3456/api/users</span></div>
-    <div class="sb-item"><span>INTERVAL</span><span class="sb-accent">1s</span></div>
-    <div class="sb-item"><span>LAST UPDATE</span><span class="sb-accent" id="sb-time">—</span></div>
-    <div class="sb-item"><span id="sb-status" class="sb-accent">INITIALIZING</span></div>
+  <div class="statusbar">
+    <div class="sb-cell">
+      <i data-lucide="globe"></i>
+      <span>axiom.trade</span>
+    </div>
+    <div class="sb-cell">
+      <i data-lucide="server"></i>
+      <span class="sb-val">localhost:3456 → api6.axiom.trade</span>
+    </div>
+    <div class="sb-cell">
+      <i data-lucide="timer"></i>
+      <span>1s poll</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-cell" style="border-right:none; border-left: 1px solid var(--border);">
+      <i data-lucide="clock-4"></i>
+      <span id="sb-time">—</span>
+    </div>
   </div>
 
 </div>
 
-<!-- COOKIE MODAL -->
+<!-- MODAL -->
 <div class="modal-backdrop hidden" id="modal-backdrop">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">Auth Cookie Setup</div>
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <div class="modal-title-row">
+        <i data-lucide="key-round"></i>
+        Auth Cookie Setup
+      </div>
+      <button class="modal-close" onclick="closeModal()">
+        <i data-lucide="x"></i>
+      </button>
     </div>
     <div class="modal-body">
-      <div class="modal-step">
+      <div class="step">
         <div class="step-num">1</div>
-        <div class="step-text">Open a new browser tab and go directly to:<br><code>https://api6.axiom.trade/online-users-count</code><br>You should see a live number (you must be logged in to axiom.trade).</div>
+        <div class="step-text">Open a new browser tab and navigate to <strong>https://api6.axiom.trade/online-users-count</strong> — you should see a live number (requires being logged into axiom.trade).</div>
       </div>
-      <div class="modal-step">
+      <div class="step">
         <div class="step-num">2</div>
-        <div class="step-text">On that tab, open DevTools (<code>F12</code> or <code>Cmd+Option+I</code>) and go to the <code>Network</code> tab. Hard-refresh with <code>Cmd+Shift+R</code> (Mac) or <code>Ctrl+Shift+R</code> (Win).</div>
+        <div class="step-text">On that tab, open DevTools (<code>F12</code> or <code>Cmd ⌥ I</code>) and click the <strong>Network</strong> tab. Hard-refresh with <code>Cmd ⇧ R</code> / <code>Ctrl ⇧ R</code>.</div>
       </div>
-      <div class="modal-step">
+      <div class="step">
         <div class="step-num">3</div>
-        <div class="step-text">Click the <code>online-users-count</code> request at the top of the list. Under <strong style="color:#fff">Request Headers</strong>, find <code>cookie</code> and copy the entire value.</div>
+        <div class="step-text">Click the <strong>online-users-count</strong> request at the top. Under <strong>Request Headers</strong>, find <code>cookie</code> and copy the full value.</div>
       </div>
-      <div class="modal-step">
+      <div class="step">
         <div class="step-num">4</div>
-        <div class="step-text">Paste it below and click Save. Stored locally in <code>.axiom-cookie</code> — never leaves your machine.</div>
+        <div class="step-text">Paste below and save. Your cookie is stored locally in <code>.axiom-cookie</code> and never sent anywhere except back to axiom's own API.</div>
       </div>
-      <div class="modal-divider"></div>
-      <div class="cookie-input-label">Cookie Value</div>
-      <textarea class="cookie-input" id="cookie-input" placeholder="Paste your axiom.trade cookie string here..."></textarea>
+      <div class="modal-sep"></div>
+      <div class="input-label">Cookie Value</div>
+      <textarea class="cookie-input" id="cookie-input" placeholder="Paste cookie string here…"></textarea>
     </div>
     <div class="modal-footer">
-      <span class="modal-error" id="modal-error"></span>
-      <button class="modal-save-btn" onclick="saveCookie()">Save &amp; Connect</button>
+      <span class="modal-err" id="modal-err"></span>
+      <button class="btn-primary" onclick="saveCookie()">
+        <i data-lucide="save"></i>
+        Save &amp; Connect
+      </button>
     </div>
   </div>
 </div>
@@ -416,8 +712,11 @@
 (function () {
   'use strict';
 
-  const API_URL  = '/api/users';
-  const POLL_MS  = 1000;
+  // Init Lucide icons
+  lucide.createIcons();
+
+  const API_URL = '/api/users';
+  const POLL_MS = 1000;
 
   let timeframeSec  = 30;
   let rawSamples    = [];
@@ -427,66 +726,67 @@
   let sessionLow    = null;
   let lastValue     = null;
   let sampleCount   = 0;
+  let connected     = false;
+  let needCookie    = false;
 
-  // ── Chart ──────────────────────────────────────────────────────────────
+  // ── Chart ────────────────────────────────────────────────────────────
   const chartEl = document.getElementById('chart');
 
   const chart = LightweightCharts.createChart(chartEl, {
     layout: {
-      background: { color: '#060810' },
-      textColor:  '#5a6180',
-      fontFamily: "'IBM Plex Mono', monospace",
+      background: { color: '#090909' },
+      textColor:  '#555555',
+      fontFamily: "'Roboto', Helvetica, Arial, sans-serif",
       fontSize:   11,
     },
     grid: {
-      vertLines: { color: '#0f1220', style: 1 },
-      horzLines: { color: '#0f1220', style: 1 },
+      vertLines: { color: '#141414' },
+      horzLines: { color: '#141414' },
     },
     crosshair: {
       mode: LightweightCharts.CrosshairMode.Normal,
-      vertLine: { color: 'rgba(79,195,247,0.3)', labelBackgroundColor: '#0b0e18' },
-      horzLine: { color: 'rgba(79,195,247,0.3)', labelBackgroundColor: '#0b0e18' },
+      vertLine: { color: 'rgba(35,143,219,0.4)', labelBackgroundColor: '#161616' },
+      horzLine: { color: 'rgba(35,143,219,0.4)', labelBackgroundColor: '#161616' },
     },
     rightPriceScale: {
-      borderColor:  '#161a2a',
-      scaleMargins: { top: 0.05, bottom: 0.25 },
+      borderColor:  '#1e1e1e',
+      scaleMargins: { top: 0.06, bottom: 0.22 },
     },
     timeScale: {
-      borderColor:                  '#161a2a',
-      timeVisible:                  true,
-      secondsVisible:               true,
-      rightOffset:                  8,
-      shiftVisibleRangeOnNewBar:    true,
+      borderColor:               '#1e1e1e',
+      timeVisible:               true,
+      secondsVisible:            true,
+      rightOffset:               8,
+      shiftVisibleRangeOnNewBar: true,
     },
     handleScroll: { mouseWheel: true, pressedMouseMove: true },
     handleScale:  { mouseWheel: true, pinch: true },
   });
 
   const candleSeries = chart.addCandlestickSeries({
-    upColor:         '#00e676',
-    downColor:       '#ff3d5a',
-    borderUpColor:   '#00e676',
-    borderDownColor: '#ff3d5a',
-    wickUpColor:     'rgba(0,230,118,0.6)',
-    wickDownColor:   'rgba(255,61,90,0.6)',
-    priceLineColor:  'rgba(79,195,247,0.4)',
+    upColor:          '#00BE96',
+    downColor:        '#FC4870',
+    borderUpColor:    '#00BE96',
+    borderDownColor:  '#FC4870',
+    wickUpColor:      'rgba(0,190,150,0.7)',
+    wickDownColor:    'rgba(252,72,112,0.7)',
+    priceLineColor:   'rgba(35,143,219,0.5)',
     lastValueVisible: true,
   });
 
   const volumeSeries = chart.addHistogramSeries({
     priceFormat:  { type: 'volume' },
     priceScaleId: 'vol',
-    color:        'rgba(79,195,247,0.18)',
   });
 
-  chart.priceScale('vol').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+  chart.priceScale('vol').applyOptions({ scaleMargins: { top: 0.84, bottom: 0 } });
 
   new ResizeObserver(entries => {
     const e = entries[0];
     if (e) chart.applyOptions({ width: e.contentRect.width, height: e.contentRect.height });
   }).observe(chartEl);
 
-  // ── Helpers ────────────────────────────────────────────────────────────
+  // ── Data helpers ──────────────────────────────────────────────────────
   function parseCount(data) {
     if (typeof data === 'number') return data;
     if (typeof data === 'string') return parseInt(data, 10);
@@ -502,10 +802,10 @@
   }
 
   function ingestValue(value, epochMs) {
-    const tfTime = floorToTF(epochMs);
-    if (!currentCandle || currentCandle.time !== tfTime) {
+    const t = floorToTF(epochMs);
+    if (!currentCandle || currentCandle.time !== t) {
       if (currentCandle) candles.push({ ...currentCandle });
-      currentCandle = { time: tfTime, open: value, high: value, low: value, close: value, volume: 1 };
+      currentCandle = { time: t, open: value, high: value, low: value, close: value, volume: 1 };
     } else {
       if (value > currentCandle.high) currentCandle.high = value;
       if (value < currentCandle.low)  currentCandle.low  = value;
@@ -521,7 +821,7 @@
     volumeSeries.setData(all.map(c => ({
       time:  c.time,
       value: c.volume,
-      color: c.close >= c.open ? 'rgba(0,230,118,0.22)' : 'rgba(255,61,90,0.18)',
+      color: c.close >= c.open ? 'rgba(0,190,150,0.25)' : 'rgba(252,72,112,0.2)',
     })));
     chart.timeScale().scrollToRealTime();
   }
@@ -532,32 +832,26 @@
     pushToChart();
   }
 
-  // ── DOM refs ──────────────────────────────────────────────────────────
+  // ── DOM updates ───────────────────────────────────────────────────────
   const countEl    = document.getElementById('count-display');
   const changeEl   = document.getElementById('count-change');
-  const hdrHigh    = document.getElementById('hdr-high');
-  const hdrLow     = document.getElementById('hdr-low');
-  const hdrSamples = document.getElementById('hdr-samples');
-  const hdrCandles = document.getElementById('hdr-candles');
   const liveDot    = document.getElementById('live-dot');
   const liveText   = document.getElementById('live-text');
   const sbTime     = document.getElementById('sb-time');
   const sbStatus   = document.getElementById('sb-status');
   const nextCandle = document.getElementById('next-candle');
   const overlay    = document.getElementById('overlay');
-  const overlayTxt = document.getElementById('overlay-text');
 
   function updateDOM(value) {
     const delta = lastValue !== null ? value - lastValue : 0;
     const dir   = delta > 0 ? 'up' : delta < 0 ? 'down' : '';
+    const sign  = delta > 0 ? '+' : '';
 
-    countEl.textContent = value.toLocaleString();
-    countEl.className   = 'current-count ' + dir;
+    countEl.textContent  = value.toLocaleString();
+    countEl.className    = 'ticker-value ' + dir;
 
-    if (delta !== 0) {
-      changeEl.textContent = (delta > 0 ? '+' : '') + delta.toLocaleString();
-      changeEl.className   = 'count-change ' + dir;
-    }
+    changeEl.textContent = delta !== 0 ? `${sign}${delta.toLocaleString()} users` : '\u00a0';
+    changeEl.className   = 'ticker-change ' + dir;
 
     if (currentCandle) {
       document.getElementById('ohlc-o').textContent = currentCandle.open.toLocaleString();
@@ -568,12 +862,12 @@
     }
 
     if (sessionHigh !== null) {
-      hdrHigh.textContent = sessionHigh.toLocaleString();
-      hdrLow.textContent  = sessionLow.toLocaleString();
+      document.getElementById('sess-high').textContent = sessionHigh.toLocaleString();
+      document.getElementById('sess-low').textContent  = sessionLow.toLocaleString();
     }
 
-    hdrSamples.textContent = sampleCount.toLocaleString();
-    hdrCandles.textContent = (candles.length + (currentCandle ? 1 : 0)).toString();
+    document.getElementById('sess-samples').textContent = `${sampleCount.toLocaleString()} pts`;
+    document.getElementById('hdr-candles').textContent  = (candles.length + (currentCandle ? 1 : 0)).toString();
 
     sbTime.textContent = new Date().toLocaleTimeString('en-US', {
       hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit',
@@ -582,54 +876,63 @@
     lastValue = value;
   }
 
-  // ── Status helpers ────────────────────────────────────────────────────
-  let connected = false;
+  // countdown
+  setInterval(() => {
+    if (!currentCandle) return;
+    const now     = Date.now();
+    const tfTime  = floorToTF(now);
+    const secLeft = Math.max(0, Math.round(((tfTime + timeframeSec) * 1000 - now) / 1000));
+    nextCandle.textContent = `next candle in ${secLeft}s`;
+  }, 250);
 
   function setConnected() {
     overlay.classList.add('hidden');
     liveDot.className    = 'live-dot';
     liveText.textContent = 'live';
-    sbStatus.textContent = 'CONNECTED';
+    sbStatus.textContent = 'Connected';
     connected = true;
   }
 
   function setNeedsCookie() {
     overlay.classList.remove('hidden');
-    overlayTxt.innerHTML = 'Auth cookie required &nbsp;<span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="openModal()">Set up now →</span>';
+    document.getElementById('overlay-title').textContent = 'Auth cookie required';
+    document.getElementById('overlay-sub').innerHTML =
+      '<button class="overlay-action" onclick="openModal()"><i data-lucide="key-round"></i> Set up cookie</button>';
+    lucide.createIcons();
     liveDot.className    = 'live-dot warn';
-    liveText.textContent = 'setup';
-    sbStatus.textContent = 'AUTH REQUIRED';
+    liveText.textContent = 'setup required';
+    sbStatus.textContent = 'Auth required';
   }
 
-  function setError(msg) {
+  function setServerDown() {
+    overlay.classList.remove('hidden');
+    document.getElementById('overlay-title').textContent = 'Local server not running';
+    document.getElementById('overlay-sub').innerHTML =
+      '<span style="color:var(--text-3);font-size:12px">Run <code style="background:var(--surface2);border:1px solid var(--border2);border-radius:2px;padding:1px 5px;color:var(--accent)">node server.js</code> in the project folder</span>';
     liveDot.className    = 'live-dot error';
-    liveText.textContent = 'error';
-    sbStatus.textContent = msg || 'ERROR';
+    liveText.textContent = 'server offline';
+    sbStatus.textContent = 'Server offline';
   }
 
   // ── Poll ──────────────────────────────────────────────────────────────
-  let failCount  = 0;
-  let needCookie = false;
+  let failCount = 0;
 
   async function poll() {
     try {
       const res  = await fetch(API_URL, { cache: 'no-store' });
       const data = await res.json();
 
-      if (data && data.error === 'no_cookie') {
+      if (data?.error === 'no_cookie') {
         if (!needCookie) { needCookie = true; setNeedsCookie(); }
         return;
       }
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${JSON.stringify(data)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const val = parseCount(data);
       if (isNaN(val)) throw new Error('unparseable: ' + JSON.stringify(data));
 
-      needCookie = false;
-      failCount  = 0;
-      sampleCount++;
-
+      needCookie = false; failCount = 0; sampleCount++;
       const now = Date.now();
       rawSamples.push({ t: now, v: val });
 
@@ -644,27 +947,16 @@
 
     } catch (err) {
       failCount++;
-      // Distinguish server-not-running vs API error
-      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-        setError('SERVER OFFLINE — run: node server.js');
-        overlayTxt.innerHTML = 'Server not running<br><span style="font-size:11px;color:var(--text-faint);letter-spacing:1px">Run: <code style="color:var(--accent)">node server.js</code> in the project folder</span>';
-        overlay.classList.remove('hidden');
+      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('Load failed')) {
+        setServerDown();
       } else {
-        setError('FEED ERROR');
+        liveDot.className    = 'live-dot error';
+        liveText.textContent = 'error';
+        sbStatus.textContent = 'Feed error';
       }
       console.warn('[axiom-chart]', err.message);
     }
   }
-
-  // Countdown ticker
-  setInterval(() => {
-    if (!currentCandle) return;
-    const now     = Date.now();
-    const tfTime  = floorToTF(now);
-    const nextTs  = (tfTime + timeframeSec) * 1000;
-    const secLeft = Math.max(0, Math.round((nextTs - now) / 1000));
-    nextCandle.textContent = `next candle in ${secLeft}s`;
-  }, 250);
 
   // TF buttons
   document.querySelectorAll('.tf-btn').forEach(btn => {
@@ -679,13 +971,13 @@
   poll();
   setInterval(poll, POLL_MS);
 
-  // ── Cookie modal ──────────────────────────────────────────────────────
+  // ── Modal ─────────────────────────────────────────────────────────────
   window.openModal  = () => document.getElementById('modal-backdrop').classList.remove('hidden');
   window.closeModal = () => document.getElementById('modal-backdrop').classList.add('hidden');
 
   window.saveCookie = async () => {
     const val = document.getElementById('cookie-input').value.trim();
-    const err = document.getElementById('modal-error');
+    const err = document.getElementById('modal-err');
     if (!val) { err.textContent = 'Cookie cannot be empty.'; return; }
     err.textContent = '';
     try {
@@ -694,18 +986,19 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cookie: val }),
       });
-      if (!res.ok) throw new Error('save failed');
-      needCookie = false;
+      if (!res.ok) throw new Error();
+      needCookie = false; connected = false;
       closeModal();
-      overlayTxt.innerHTML = 'Connecting to feed<span class="blink">_</span>';
+      // reset overlay
+      document.getElementById('overlay-title').textContent = 'Connecting to feed';
+      document.getElementById('overlay-sub').innerHTML = 'Waiting for data<span class="blink">_</span>';
       overlay.classList.remove('hidden');
       poll();
-    } catch (e) {
+    } catch {
       err.textContent = 'Failed to save. Is the server running?';
     }
   };
 
-  // Close modal on backdrop click
   document.getElementById('modal-backdrop').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
