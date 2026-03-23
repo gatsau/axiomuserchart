@@ -805,8 +805,10 @@
   function ingestValue(value, epochMs) {
     const t = floorToTF(epochMs);
     if (!currentCandle || currentCandle.time !== t) {
+      // For 1s candles: open at the previous close so each body shows the tick-to-tick move
+      const open = (timeframeSec === 1 && currentCandle) ? currentCandle.close : value;
       if (currentCandle) candles.push({ ...currentCandle });
-      currentCandle = { time: t, open: value, high: value, low: value, close: value, volume: 1 };
+      currentCandle = { time: t, open, high: Math.max(open, value), low: Math.min(open, value), close: value, volume: 1 };
     } else {
       if (value > currentCandle.high) currentCandle.high = value;
       if (value < currentCandle.low)  currentCandle.low  = value;
